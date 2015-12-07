@@ -1,0 +1,442 @@
+{% extends './NavBarTemplate.html' %}
+
+{% block css %}
+    <link href="/static/css/Home.css" rel="stylesheet">
+{% endblock css %}
+
+{% block bar-right %}
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-right">
+            {% if isEdit != 'True' %}
+                <li class="hidden">
+                    <a href="#page-top"></a>
+                </li>
+                <li class="page-scroll">
+                    <a href="#portfolio">Portfolio</a>
+                </li>
+                <li class="page-scroll">
+                    <a href="#about">About</a>
+                </li>
+                <li class="page-scroll">
+                    <a href="#contact">Contact</a>
+                </li>
+            {% else %}
+                <li class="page-scroll">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#Edit-option">Edit
+                        Option</a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a href="" data-toggle="modal" data-target="#add-block-page">Add Block</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+            {% if user.is_authenticated %}
+                <li class="">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true"
+                       aria-expanded="false">{{ user }}<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'resuMe.views.resume' userInfo.user.id %}">My Resume</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'resuMe.views.edit_resume' %}">Edit Resume</a>
+                        </li>
+                        <li><a href="/logout">Log Out</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li>
+                    <a href="/resuMe/login">Sign In</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock bar-right %}
+
+{% block content %}
+    <input type="hidden" id="userID" value={{ userInfo.user.id }}>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="row">
+                <div id="add-block-page" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">X</button>
+                                <h2 class="h2" id="myModalLabel">Add Block</h2>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <label class="pull-left">Title Name</label>
+                                        <input class="form-control"
+                                               placeholder="You can enter 'Education','Work Experience'....."
+                                               type="text"
+                                               id="title-to-add" name="title">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="text-align: center">
+                                <button id="save-add-block" type="submit" class="btn btn-default"
+                                        data-dismiss="modal">Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <img id="user-photo" class="img-circle" src="/resuMe/photo/{{ userInfo.user.id }}"
+                         alt="">
+
+                    <div class="intro-text">
+                        <span class="name"
+                              id="profile-name">{{ userInfo.user.first_name }} {{ userInfo.user.last_name }}</span>
+                        {% if isEdit == 'True' %}
+                            <div>
+                                <button data-toggle="modal" data-target="#edit-profile" class="pull-right
+                            profile-edit btn btn-primary">EDIT
+                                </button>
+                            </div>
+                        {% endif %}
+                        <hr style="margin-top: 50px">
+                        <span class="skills" id="profile-summary">{{ userInfo.summary }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Portfolio Grid Section -->
+    <section id="portfolio">
+        <div class="container">
+            <div class="row" id="append-after">
+                <div class="col-lg-12 text-center">
+                    <h2>Portfolio</h2>
+                    <hr class="star-primary">
+                </div>
+            </div>
+
+            {% for block in blocks %}
+                <div block-id="{{ block.id }}" class="block" id="block-{{ block.id }}">
+                    <span class="h2">{{ block.title }}</span>
+                    {% if isEdit == 'True' %}
+                        <kbd class="pull-right">
+                            <button class="btn-sm move-up-block" block-up-id="{{ block.id }}">
+                                <i class="fa fa-arrow-circle-up"></i> Up
+                            </button>
+                            <button data-toggle="modal" data-target="#blogcontent-modal"
+                                    edit-id="{{ block.id }}" class="blogcontent-edit">EDIT
+                            </button>
+                            <button class="btn-sm delete-alert" data-toggle="modal" data-target="#blogcontent-modal"
+                                    alert-id="{{ block.id }}"><i class="glyphicon glyphicon-trash"></i></button>
+                            <button class="btn-sm move-down-block" block-down-id="{{ block.id }}">
+                                <i class="fa fa-arrow-circle-down"></i> Down
+                            </button>
+                        </kbd>
+                    {% endif %}
+                    <hr class="resumeSeperator">
+                    {% for key, value in resumeContent.items %}
+                        {% if key == block.id %}
+                            {% for blockcontent in value %}
+                                <div class="sub-block" blockcontent-id="{{ blockcontent.id }}">
+                                    <div class="row title">
+                                        <div class="col-sm-6 portfolio-item">
+                                            <div>
+                                                <a href="#portfolioModal1" class="portfolio-link" data-toggle="modal">
+                                                    <div class="caption">
+                                                        <div class="caption-content">
+                                                            <i class="fa fa-search-plus fa-3x"></i>
+                                                        </div>
+                                                    </div>
+
+                                                    <h4 class="img-responsive"
+                                                        id="sub-block-title-{{ blockcontent.id }}">
+                                                        {{ blockcontent.sub_title }}
+                                                    </h4>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% if isEdit == 'True' %}
+                                            <div class="col-sm-4 sidebar">
+                                                <div class="mini-submenu">
+                                                    <span class="icon-bar"></span>
+                                                    <span class="icon-bar"></span>
+                                                    <span class="icon-bar"></span>
+                                                </div>
+                                                <span class="list-group" style="z-index: 1">
+                                                    <span href="#" class="list-group-item active">Edit Option
+{#                                                            <span class="pull-right slide-submenu">#}
+{#                                                              <i class="fa fa-times"></i>#}
+{#                                                            </span>#}
+                                                    </span>
+                                                          <a class="list-group-item up-blockcontent" style="z-index: 1"
+                                                             blockcontent-up-id="{{ blockcontent.id }}">
+                                                              <i class="fa fa-arrow-up"></i> Move up
+                                                          </a>
+                                                          <a class="list-group-item delete-alert" style="z-index: 1"
+                                                             alert-id="{{ blockcontent.id }}" data-toggle="modal"
+                                                             data-target="#blogcontent-modal">
+                                                              <i class="fa fa-minus-circle"></i> Delete
+                                                          </a>
+                                                          <a class="list-group-item down-blockcontent"
+                                                             style="z-index: 1"
+                                                             blockcontent-down-id="{{ blockcontent.id }}">
+                                                              <i class="fa fa-arrow-down"></i> Move Down
+                                                          </a>
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="row content">
+                                        <pre class="col-sm-offset-1"
+                                             id="sub-block-content-{{ blockcontent.id }}">{{ blockcontent.content }}</pre>
+                                    </div>
+                                    {% if blockcontent.url != '' %}
+                                        <div class="row content">
+                                            <div class="col-sm-offset-1">
+                                                Link:
+                                                <a href="{{ blockcontent.url }}" class="portfolio-link"
+                                                   target="_blank">{{ blockcontent.url }}</a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <br>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="success" id="about">
+        <div class="container">
+            {% if isEdit == 'True' %}
+                <button class="btn btn-sm btn-primary about-button col-md-offset-11" data-toggle="modal"
+                        data-target="#edit-about-modal">EDIT ABOUT
+                </button>
+            {% endif %}
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>About</h2>
+                    <hr class="star-light">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-11 col-lg-offset-2">
+                    <p id="about-content">{{ userInfo.about }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Contact Me</h2>
+                    <hr class="star-primary">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <div class="row control-group">
+                        <div class="form-group col-xs-12 floating-label-form-group controls">
+                            <label>Name</label>
+                            <input type="text" class="form-control" placeholder="Name" id="name">
+                        </div>
+                    </div>
+                    <div class="row control-group">
+                        <div class="form-group col-xs-12 floating-label-form-group controls">
+                            <label>Email Address</label>
+                            <input type="email" class="form-control" placeholder="Email Address" id="email">
+                        </div>
+                    </div>
+                    <div class="row control-group">
+                        <div class="form-group col-xs-12 floating-label-form-group controls">
+                            <label>Phone Number</label>
+                            <input type="tel" class="form-control" placeholder="Phone Number" id="phone">
+                        </div>
+                    </div>
+                    <div class="row control-group">
+                        <div class="form-group col-xs-12 floating-label-form-group controls">
+                            <label>Message</label>
+                            <textarea rows="5" class="form-control" placeholder="Message" id="message"></textarea>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="row">
+                        <div class="form-group col-xs-12">
+                            <button id="email-submit" class="btn btn-success btn-lg">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="footer-above">
+            <div class="container">
+                <div class="row">
+                    <div class="footer-col col-md-4">
+                        <h3>Address</h3>
+
+                        <p id="address-to-show">{{ userInfo.address }}</p>
+                        {% if isEdit == 'True' %}
+                            <input type="text" class="form-control text-center" id="address"
+                                   value="{{ userInfo.address }}">
+                        {% endif %}
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <h3>Phone Number</h3>
+
+                        <p id="phone-to-show">
+                            {{ userInfo.phone }}
+                        </p>
+                        {% if isEdit == 'True' %}
+                            <input type="text" class="form-control text-center" id="user-phone"
+                                   value="{{ userInfo.phone }}">
+                        {% endif %}
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <h3>Email</h3>
+
+                        <p id="email-to-show">{{ userInfo.user.email }}</p>
+                        {% if isEdit == 'True' %}
+                            <input type="text" class="form-control text-center" id="user-email"
+                                   value="{{ userInfo.user.email }}">
+                        {% endif %}
+                    </div>
+                    {% if isEdit == 'True' %}
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <button class="btn btn-success btn-sm" id="info-edit">submit</button>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Modals for editing block-contents-->
+    <div class="modal fade" id="blogcontent-modal" tabindex="-1" role="dialog" aria-hidden="true">
+
+    </div>
+
+    <!-- Modals for editing Personal profile-->
+    <div class="modal fade" id="edit-profile" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">X</button>
+                    <h4 class="modal-title" id="myModalLabel">Profile Edition</h4>
+                </div>
+                <form class="modal-body" id="profile" enctype='multipart/form-data'>
+                    <div style="text-align: center">
+                        <img src="/resuMe/photo/{{ user.id }}" name="aboutme" width="180" height="180" border="0"
+                             class="img-circle" id="edit-profile-photo">
+
+                        <h3 class="media-heading">
+                            <small></small>
+                        </h3>
+                        <span class='btn btn-info btn-file'>Select Photo<input type='file' name='photo'
+                                                                               id="input-photo">
+                        </span>
+                    </div>
+                    <hr>
+                    <div style="text-align: center">
+                        <p class="text-left"><strong>First Name: </strong></p>
+                        <input type="text" class="form-control" value="{{ userInfo.user.first_name }}"
+                               style="margin-top:10px" name="first_name" id="first_name">
+
+                        <p class="text-left"><strong>Last Name: </strong></p>
+                        <input type="text" class="form-control" value="{{ userInfo.user.last_name }}"
+                               style="margin:10px 0px -10px 0px " name="last_name" id="last_name">
+                        <br>
+
+                        <p class="text-left"><strong>Summary: </strong></p>
+                        <input type="text" class="form-control" value="{{ userInfo.summary }}"
+                               style="margin:10px 0px -10px 0px " name="summary" id="summary">
+                        <br>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <div style="text-align: center">
+                        <button type="button" class="btn btn-default profile-save" data-dismiss="modal">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for editing about infomation-->
+    <div class="modal fade in" id="edit-about-modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">X</button>
+                    <h2 class="h2" id="editAboutModal">ABOUT INFOMATION</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label class="pull-left">DESCRIPTION</label>
+                            <textarea class="form-control" id="about-to-add"
+                                      name="aboutInfo">{{ userInfo.about }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align: center">
+                    <button id="save-edit-about" type="submit" class="btn btn-default" data-dismiss="modal">Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for photos -->
+    <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="modal-body">
+                        <h2>Details</h2>
+                        <hr class="star-primary">
+                    </div>
+                </div>
+            </div>
+            <div class="jk-slider">
+
+            </div>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i>
+                Close
+            </button>
+        </div>
+    </div>
+{% endblock content %}
+
+
+{% block script %}
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    {#    <!-- Custom Theme JavaScript -->#}
+    <script src="/static/js/freelancer.js"></script>
+    <!-- Home -->
+    <script src="/static/js/home.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+{% endblock script %}
+
