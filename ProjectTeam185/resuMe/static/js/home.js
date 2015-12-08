@@ -13,6 +13,7 @@ $(document).ready(function () {
     $(document).on("click", ".blogcontent-edit", edit_block);
     $(document).on("click", ".portfolio-link", photo_link);
     $(document).on("click", ".profile-save", edit_profile);
+    $(document).on("click", ".save-remove", sumbit_blockconetent_change);
     $(document).on("click", ".block-delete", delete_block);
     $(document).on("click", ".blockcontent-delete", delete_block_content);
     $(document).on("click", ".delete-alert", delete_alert);
@@ -161,16 +162,17 @@ function edit_block() {
         var li;
         var div;
         var blockcontent_id = $(this).attr("blockcontent-id");
+        var url = $("#hidden-url-" + blockcontent_id).val();
         var title_text = $("#sub-block-title-" + blockcontent_id).text().trim();
         var content_text = $("#sub-block-content-" + blockcontent_id).text().trim();
         if (index == 0) {
-            div = "<form class='tab-pane fade in active' action='/resuMe/edit_block_content/" + blockcontent_id
-                + "'id='content-" + blockcontent_id + "' method='post' enctype='multipart/form-data'>";
+            div = "<form class='tab-pane fade in active'"
+                + "id='content-" + blockcontent_id + "' method='post' enctype='multipart/form-data'>";
             li = "<li class='active li-title'><a data-toggle='pill' href='#content-" + blockcontent_id + "'>"
                 + title_text + "</a></li>";
         } else {
-            div = "<form class='tab-pane fade' method='post' action='/resuMe/edit_block_content/" + blockcontent_id
-                + "'id='content-" + blockcontent_id + "' method='post' enctype='multipart/form-data'>";
+            div = "<form class='tab-pane fade' method='post' id='content-" + blockcontent_id + "' " +
+                   "method='post' enctype='multipart/form-data'>";
             li = "<li class='li-title'><a data-toggle='pill' href='#content-" + blockcontent_id + "'>" + title_text +
                 "</a></li>";
         }
@@ -182,21 +184,22 @@ function edit_block() {
             "value='" + title_text + "' id='title-" + blockcontent_id + "'>";
         div += "<label class='pull-left'>Content</label>";
         div += "<textarea type='text' class='form-control' name='content' " +
-            "id='content-" + blockcontent_id + "'>"+content_text+"</textarea>";
+            "id='textarea-" + blockcontent_id + "'>"+content_text+"</textarea>";
         div += "<label class='pull-left'>Subject</label>"
         div += "<select class='pull-left form-control' id='select-" + blockcontent_id + "' name='link-select'>";
         div += "<option value='default' class='default'>Please selcet one.....</option>" +
-            "<option value='link' class='link' link-id='" + blockcontent_id + "'>Link Website</option>" +
-            "<option value='photo' class='photo' photo-id='" + blockcontent_id + "'>Link Photo</option>";
+               "<option value='link' class='link' link-id='" + blockcontent_id + "'>Link Website</option>" +
+              "<option value='photo' class='photo' photo-id='" + blockcontent_id + "'>Link Photo</option>";
         div += " </select>";
         div += "<input type='text' class='form-control link-input' name='url' style='display:none'" +
-            "placeholder='Enter the link you want...' id='link-input-" + blockcontent_id + "'>";
+               "value='" + url +"' id='link-input-" + blockcontent_id + "'>";
         div += "<span class='btn btn-info btn-file' style='display:none' id='upload-btn-" + blockcontent_id +
-            "'>Upload Photo <input type='file' name='picture_file" +  "' id='upload-" + blockcontent_id + "'></span>";
+               "'>Upload Photo <input type='file' name='picture_file" +  "' id='upload-" + blockcontent_id + "'></span>";
         div += "<div>";
         div += '<hr>';
         div += "<div style='text-align: center'>"
-        div += "<button type='submit' class='btn btn-default save-remove' >Save</button>";
+        div += "<button type='button' class='btn btn-default save-remove' content-change-save=" + blockcontent_id +">"+
+               "Save</button>";
         div += "</div>"
         div += "</div>";
         div += "</form>"
@@ -221,7 +224,8 @@ function edit_block() {
     page += "</ul>\
                 </div>\
                     <div class='modal-body'>\
-                        <div style='text-align: center' class='tab-content'>";
+                       <p id='change-status' class='text-left text-danger'></p>\
+                          <div style='text-align: center' class='tab-content' id='form-container'>";
 
     for (i = 0; i < list_of_div.length; i++) {
         var html = list_of_div[i];
@@ -243,6 +247,33 @@ function edit_block() {
 
 }
 
+function sumbit_blockconetent_change(){
+    $("#form-container").children().each(function(index){
+        var id = /\d+/.exec($(this).attr('id'));
+        var option = {
+            type: 'post',
+            url: '/resuMe/edit_block_content/' + id,
+            cache: false,
+            dataType: 'text',
+            success: function (data) {
+                var text1 = $("#textarea-"+id).val();
+                var text2 = $("#title-"+id).val();
+                text1 = text1.replace("&", "$amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                text2 = text2.replace("&", "$amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                $("#sub-block-content-" + id).text(text1);
+                $("#sub-block-title-" + id).text(text2);
+                if ($("#change-status").text()!="Erros occur"){
+                    $("#change-status").text("Successfully change!");
+                }
+            },
+            error: function (data) {
+                $("#change-status").text("Erros occur");
+            }
+        }
+        $("#content-"+id).ajaxSubmit(option);
+    });
+}
+
 function empty() {
     $("#blogcontent-modal").empty();
 }
@@ -253,6 +284,7 @@ function add_block_content() {
     $.post("/resuMe/add_block_content/" + block_id).done(function (data) {
         var tab_panel = $(".tab-content");
         var nav_pill = $(".nav-pills");
+        var url = $("#hidden-url-" + id);
         var id = data;
         var li = "<li class='active'><a data-toggle='pill' href='#content-" + id + "'>" + 'New Content' + "</a></li>";
         var div = "<form class='tab-pane fade in active' method='POST' enctype='multipart/form-data' " +
@@ -275,7 +307,7 @@ function add_block_content() {
         div += "<div>";
         div += "<div style='text-align: center'>";
         div += '<hr>';
-        div += "<button type='submit' class='btn btn-default save-remove' >Save</button>";
+        div += "<button type='button' class='btn btn-default save-remove' >Save</button>";
         div += "</div>";
         div += "</div>";
         div += "</form>"
@@ -335,7 +367,7 @@ function photo_link() {
         }
 
         page +="</ol>";
-        page += "<div class='carousel-inner'>";
+        page += "<div class='carousel-inner col-md-8'>";
         for (var i = 0; i < data.length; i++) {
             if (i != 0) {
                 page += "<div class='item'>";

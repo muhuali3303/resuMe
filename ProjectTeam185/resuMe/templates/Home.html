@@ -143,6 +143,7 @@
                                     <div class="row title">
                                         <div class="col-sm-6 portfolio-item">
                                             <div>
+                                                {% if blockcontent.url == 'http://www.com' %}
                                                 <a href="#portfolioModal1" class="portfolio-link" data-toggle="modal">
                                                     <div class="caption">
                                                         <div class="caption-content">
@@ -154,7 +155,14 @@
                                                         id="sub-block-title-{{ blockcontent.id }}">
                                                         {{ blockcontent.sub_title }}
                                                     </h4>
+                                                    <input type="hidden" value="{{ blockcontent.url }}" id='hidden-url-{{ blockcontent.id }}'">
                                                 </a>
+                                                    {% else %}
+                                                    <h4 class="img-responsive text-primary"
+                                                        id="sub-block-title-{{ blockcontent.id }}">
+                                                        {{ blockcontent.sub_title }}
+                                                    </h4>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         {% if isEdit == 'True' %}
@@ -192,7 +200,7 @@
                                         <pre class="col-sm-offset-1"
                                              id="sub-block-content-{{ blockcontent.id }}">{{ blockcontent.content }}</pre>
                                     </div>
-                                    {% if blockcontent.url != '' %}
+                                    {% if blockcontent.url != '' and  blockcontent.url != "http://www.com"%}
                                         <div class="row content">
                                             <div class="col-sm-offset-1">
                                                 Link:

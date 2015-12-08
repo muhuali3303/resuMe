@@ -2,7 +2,8 @@ from resuMe.forms import *
 from resuMe.models import *
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+
 
 # add a block
 def add_block(request):
@@ -43,7 +44,7 @@ def edit_blockcontent(request, blockcontent_id):
 
     # valid by form
     if not bForm.is_valid():
-        return redirect(reverse('resuMe.views.edit_resume'))
+        return JsonResponse(bForm.errors.as_json(), safe=False)
 
     bForm.save()
     userInfo = get_object_or_404(UserInfo, user=request.user)
@@ -56,8 +57,9 @@ def edit_blockcontent(request, blockcontent_id):
         pForm = BlockContentPicForm(request.POST, request.FILES, instance=picture)
         if pForm.is_valid():
             pForm.save()
+            # blockcontent.picture_number = blockcontent.picture_number + 1
 
-    return redirect(reverse('resuMe.views.edit_resume'))
+    return HttpResponse("Success")
 
 
 # change position with upper

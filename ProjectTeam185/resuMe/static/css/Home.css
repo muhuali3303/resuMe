@@ -8,7 +8,11 @@
 .content-pic {
     height: 1000px;
     width: 1000px;
-    margin-left: 470px;
+    margin-left: 9%;
+}
+
+#about-content {
+    max-width: 1000px;
 }
 
 .navbar {

@@ -8,13 +8,13 @@ from django.utils.html import escape
 class UserInfo(models.Model):
     user = models.OneToOneField(User)
     photo = models.ImageField(upload_to="./", blank=True, default='Doge.jpeg')
-    summary = models.CharField(max_length=200, default='Take a look at my resume!')
+    summary = models.CharField(max_length=1000, default='Take a look at my resume!')
     phone = models.IntegerField(default=0)
     address = models.CharField(max_length=50, default='No provided')
     profile_background = models.ImageField(upload_to="pictures")
     created_at = models.DateTimeField(default=datetime.datetime.now())
     click_count = models.IntegerField(default=0)
-    about = models.CharField(max_length=500, default='No Information...')
+    about = models.CharField(max_length=1000, default='No Information...')
     edited = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -51,8 +51,10 @@ class UserInfo(models.Model):
                     <hr>
                     <p>{}</p>
                     <a class="btn btn-success" href="/resuMe/resume/{}">See More <span class="glyphicon glyphicon-chevron-right"></span></a>
-                    <hr class="Seperator">'''.replace('\n', '\\n').replace('\t', '')
+                    <hr class="Seperator">'''
         result = result.format(self.user.get_full_name(), self.id, block.title, self.summary, self.id).replace('"', "'")
+        # result = result.replace("&","$amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot;")
+        result = result.replace('\n', '\\n').replace('\t', '').replace('\r\n','\\n').replace('\n\r','\\n')
         return result
 
 
@@ -60,7 +62,7 @@ class UserInfo(models.Model):
 # a block contains a title and a content
 class Block(models.Model):
     user = models.ForeignKey(User)
-    title = models.CharField(max_length=40)
+    title = models.CharField(max_length=400)
     index = models.IntegerField(default=0)
 
     def __unicode__(self):
@@ -70,10 +72,11 @@ class Block(models.Model):
 # a blockContent contains a subtitle and content
 class BlockContent(models.Model):
     block = models.ForeignKey(Block)
-    sub_title = models.CharField(max_length=40, blank=True, default="Description")
-    content = models.CharField(max_length=200, blank=True, default="Description")
+    sub_title = models.CharField(max_length=400, blank=True, default="Description")
+    content = models.CharField(max_length=1000, blank=True, default="Description")
     url = models.URLField(blank=True, default="")
     index = models.IntegerField(default=0)
+    # picture_number = models.IntegerField(default=0)
 
     def __unicode__(self):
         return "BlockContent " + self.sub_title
@@ -86,7 +89,7 @@ class BlockContent(models.Model):
 class Picture(models.Model):
     picture_file = models.ImageField(upload_to="./", blank=True)
     blockcontent = models.ForeignKey(BlockContent)
-    description = models.CharField(max_length=200, blank=True, default="Description")
+    description = models.CharField(max_length=1000, blank=True, default="Description")
 
     def __unicode__(self):
         return "Picture " + self.picture_file.name
