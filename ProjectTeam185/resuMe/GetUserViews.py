@@ -6,7 +6,7 @@ from django.shortcuts import render
 # Get top 5 popular User
 def get_popular(request):
     context = {}
-    popularU = UserInfo.objects.all().filter(edited=True).order_by('-click_count')
+    popularU = UserInfo.objects.all().filter().order_by('-click_count')
     index = min(5, len(popularU))
     popularU = popularU[:index]
     context['Infos'] = popularU
@@ -16,7 +16,7 @@ def get_popular(request):
 # Get top 5 new User
 def get_newest(request):
     context = {}
-    newestU = UserInfo.objects.all().filter(edited=True).order_by('-created_at')
+    newestU = UserInfo.objects.all().filter().order_by('-created_at')
     index = min(5, len(newestU))
     newestU = newestU[:index]
     context['Infos'] = newestU
