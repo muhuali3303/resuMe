@@ -143,7 +143,7 @@ def send_email(request, uid):
     email_content += '\n================================================================\n'
     email_content += 'From: ' + form.cleaned_data['name']
     email_content += '\nMessage: \n' + form.cleaned_data['message']
-    send_mail('Email from resuMe', email_content, 'resuMe@resuMe.com', [toUser.user.email])
+    send_mail('Email from resuMe', email_content, 'kangw@andrew.cmu.edu', [toUser.user.email])
     return HttpResponse('success')
 
 

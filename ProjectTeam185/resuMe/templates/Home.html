@@ -155,13 +155,14 @@
                                                         id="sub-block-title-{{ blockcontent.id }}">
                                                         {{ blockcontent.sub_title }}
                                                     </h4>
-                                                    <input type="hidden" value="{{ blockcontent.url }}" id='hidden-url-{{ blockcontent.id }}'">
+                                                    <input type="hidden" value="{{ blockcontent.url }}" id='hidden-url-{{ blockcontent.id }}'>
                                                 </a>
-                                                    {% else %}
+                                                {% else %}
                                                     <h4 class="img-responsive text-primary"
                                                         id="sub-block-title-{{ blockcontent.id }}">
                                                         {{ blockcontent.sub_title }}
                                                     </h4>
+                                                    <input type="hidden" value="{{ blockcontent.url }}" id='hidden-url-{{ blockcontent.id }}'>
                                                 {% endif %}
                                             </div>
                                         </div>

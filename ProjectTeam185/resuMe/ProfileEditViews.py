@@ -37,9 +37,12 @@ def edit_about(request):
 def edit_contact(request):
     thisU = request.user
     userInfo = get_object_or_404(UserInfo, user=thisU)
+    user = request.user
     form = APEForm(request.POST, instance=userInfo)
     if not form.is_valid():
         return HttpResponse('fail')
     form.save()
+    user.email = form.cleaned_data.get("email")
+    user.save()
     return HttpResponse("success")
 

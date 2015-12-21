@@ -256,14 +256,18 @@ function sumbit_blockconetent_change(){
             cache: false,
             dataType: 'text',
             success: function (data) {
-                var text1 = $("#textarea-"+id).val();
-                var text2 = $("#title-"+id).val();
-                text1 = text1.replace("&", "$amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
-                text2 = text2.replace("&", "$amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
-                $("#sub-block-content-" + id).text(text1);
-                $("#sub-block-title-" + id).text(text2);
-                if ($("#change-status").text()!="Erros occur"){
-                    $("#change-status").text("Successfully change!");
+                if (data=="Success") {
+                    var text1 = $("#textarea-" + id).val();
+                    var text2 = $("#title-" + id).val();
+                    text1 = text1.replace("&", "$amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                    text2 = text2.replace("&", "$amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                    $("#sub-block-content-" + id).text(text1);
+                    $("#sub-block-title-" + id).text(text2);
+                    if ($("#change-status").text() != "Erros occur") {
+                        $("#change-status").text("Successfully change!");
+                    }
+                } else{
+                    $("#change-status").text("Erros occur");
                 }
             },
             error: function (data) {
@@ -517,7 +521,7 @@ function email_submit() {
         if (data == 'success') {
             window.alert('Send email success!!');
         }else {
-            window.alert("Fields can't be blank!!");
+            window.alert("Send Email Fails");
         }
     });
 }
