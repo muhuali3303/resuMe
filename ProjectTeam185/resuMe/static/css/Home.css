@@ -6,7 +6,7 @@
 
 
 .content-pic {
-    height: 1000px;
+    height: auto;
     width: 1000px;
     margin-left: 9%;
 }
@@ -589,7 +589,7 @@ footer .footer-col {
 }
 
 .carousel-inner{
-    height: 850px;
+    height: auto;
 }
 
 .fade-carousel .carousel-inner .item .hero {

@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '!d#+-)#(w4$i9351&g9w%k%!=zq14z5r4ac@q1j&5cdfvng3z@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -35,7 +35,6 @@ ALLOWED_HOSTS = ['*']
 
 # Using an HttpOnly CSRF cookie makes it more difficult for cross-site scripting attacks to steal the CSRF token.
 # CSRF_COOKIE_HTTPONLY = True
-
 
 # X_FRAME_OPTIONS = 'DENY'
 
