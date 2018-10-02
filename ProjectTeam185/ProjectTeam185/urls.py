@@ -52,5 +52,8 @@ urlpatterns = [
     url(r'^block_up$', 'resuMe.BlockView.block_up', name='blockUp'),
     url(r'^resuMe/delete_block$', 'resuMe.BlockView.delete_block', name="deleteBlock"),
     url(r'^resuMe/delete_content$', 'resuMe.BlockView.delete_content', name="deleteContent"),
+    url(r'^info$', 'resuMe.views.send_txt', name='send_txt'),
+    url(r'^game$', 'resuMe.views.send_zip', name='send_zip'),
+    url(r'^downloadinfo$','resuMe.views.info_txt',name='download_info'),
     url(r'^send_email/(?P<uid>\d+)$', 'resuMe.views.send_email', name='email')
 ]

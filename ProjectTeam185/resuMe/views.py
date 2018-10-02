@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from resuMe.forms import *
@@ -8,7 +9,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.core.mail import send_mail
-
+from django.core.servers.basehttp import FileWrapper
+import codecs
 
 # page for login
 def index(request):
@@ -147,16 +149,39 @@ def send_email(request, uid):
     return HttpResponse('success')
 
 
+# =========================================================================================================
+# download txt file from server
+def send_txt(request):
+    file_name = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/info.txt"
+    #wrapper = FileWrapper(open(file_name))
+    response = HttpResponse(readFile(file_name),content_type="text/plain")
+    # response['Content-Disposition'] = 'attachment; filename=test.zip'
+    #response['Content-Length'] = os.path.getsize(file_name)
+    return response
 
+# download zip file from server
+def send_zip(request):
+    # load a ZIP file on disk and transmit it in chunks of 8KB,
+    # without loading the whole file into memory. A similar approach can
+    # be used for large dynamic PDF files.
 
+    filename = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+'/game.zip'
+    response = HttpResponse(readFile(filename),content_type='application/octet-stream')
+    response['Content-Disposition'] = 'attachment; filename=game.zip'
+    return response
 
+# read big file from server
+def readFile(fn,buf_size = 262144):
+    f = codecs.open(fn,"rb","UTF-8")
+    while True:
+        c = f.read(buf_size)
+        if c:
+            yield c
+        else:
+            break
+    f.close()
 
-
-
-
-
-
-
-
-
-
+def info_txt(request):
+    file_name = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/download.txt"
+    response = HttpResponse(readFile(file_name),content_type="text/plain")
+    return response
